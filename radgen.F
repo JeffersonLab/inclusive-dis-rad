@@ -316,6 +316,7 @@ c	  sicurr=scgen
        endif
 
 	 if(ita.ne.0)then
+        r1=r1*dsitkm(ndxtkm(ita),ita)
 	 do ktk=1,ndxtkm(ita)
 c	     print *,dsitkm(ktk,ita),r1,ndxtkm(ita)
 	    if (r1.le.dsitkm(ktk,ita)) then
