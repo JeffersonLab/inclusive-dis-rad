@@ -339,7 +339,7 @@ c
 c
         enddo
         enddo
-        stop
+c        stop
         return
         end
 
