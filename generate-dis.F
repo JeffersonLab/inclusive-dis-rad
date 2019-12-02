@@ -30,21 +30,23 @@ c
        if(cl_target.eq.2) CTARGET='D'                ! can be also HI
        LST40=0               ! unpolarized for now
 c
-       if(cl_rad.eq.2) then 
-        ixytst=-1              ! calculate event by event
-       else
-        ixytst=0               ! create the table on flight
-        if(cl_xmin.lt.0.01.or.cl_xmax.gt.0.99.or.
-     6cl_ymin.lt.0.055.or.cl_ymax.gt.0.99) then
-         print *,'x,y-limits incompatible with radgen'
-     6,'x ',cl_xmin,cl_xmax,' y ',cl_ymin,cl_ymax
-         stop
-        endif
-        call radgen_init(ctarget,E_beam,lst40,ixytst)
-        print *,'RADGEN table created for Eb=',E_beam
-        ixytst=2               ! make a new init with reading from table
-       endif
+        if(cl_rad.eq.2) then 
+         ixytst=-1              ! calculate event by event
+        else if(cl_rad.eq.3) then
+         ixytst=0               ! create the table on flight
+         if(cl_xmin.lt.0.01.or.cl_xmax.gt.0.99.or.
+     6    cl_ymin.lt.0.055.or.cl_ymax.gt.0.99) then
+          print *,'x,y-limits incompatible with radgen'
+     6,   'x ',cl_xmin,cl_xmax,' y ',cl_ymin,cl_ymax
+          stop
+         endif
+         call radgen_init(ctarget,E_beam,lst40,ixytst)
+         print *,'RADGEN table created for Eb=',E_beam
+         ixytst=2               ! create the table table
+       else if(cl_rad.eq.1) then
+         ixytst=2               ! reading from table
        call radgen_init(ctarget,E_beam,lst40,ixytst)
+       endif
       endif
 c
 c
@@ -232,18 +234,21 @@ c
 #include "const.inc"
       real x,q2,y
       real px,py,pz,eprime,pprime,xsec,sf,pwidth,zwidth,vx,vy,vz
-          integer   NumNuc,NumProt,Ntracks,beam_pid,targ_id,process_id
-          data beam_pid/11/,targ_id/2212/,process_id/0/ ! ep scattering
-          data NumNuc/1/,NumProt/1/,Ntracks/1/                     ! proton target for now
-          real e1,p1,vpgen(4),VPRAD(4),PhRAD(4),q2tr,utr,weight,vdotm
+      integer   NumNuc,NumProt,Ntracks,beam_pid,targ_id,process_id
+      integer irannom
+      data beam_pid/11/,targ_id/2212/,process_id/0/ ! ep scattering
+      data NumNuc/1/,NumProt/1/,Ntracks/1/                     ! proton target for now
+      real e1,p1,vpgen(4),VPRAD(4),PhRAD(4),q2tr,utr,weight,vdotm
+      real rand,rnd
 c
           logical lFirst
           DATA lFirst /.TRUE./
-          integer ifilenum,jc,m,itotal
-          DATA ifilenum /1/
+          integer jc,m,itotal
           DATA itotal /0/
           character*8  c8name
           character*200  fname
+          integer*4 iran,now(3),ifilenum
+          DATA ifilenum /1/
 c
           cl_pol=1.0    ! default values for weight
           cl_epol=0.0   ! default value for pol/sf
@@ -254,7 +259,17 @@ c
            close (41)
            lFirst=.TRUE.
            ifilenum=ifilenum+1
+           CALL SRAND(ifilenum)
            itotal=0
+c
+c also randomize
+c
+          call itime(now)     ! now(1)=hour, (2)=minute, (3)=second
+           irannom=100*now(3)+10*now(2)+now(1)
+          print *,'Rndm numb. for set->',irannom,now(1),now(2),now(3)
+           DO 100 iran=1,irannom
+ 100       RND=rand()
+c
           endif
 c
                 itotal=itotal+1
@@ -370,8 +385,8 @@ c
       cl_xq2=.FALSE.       ! do x/y by default
       cl_docker=.FALSE.    ! set if 1 file is needed 
 c
-      cl_zpos=0.0            ! z-position
-      cl_zwidth=2.0          ! z-width ( zpos+/-zwidth/2)
+      cl_zpos=-3.0           ! z-position of RGA
+      cl_zwidth=5.0          ! z-width ( zpos+/-zwidth/2)
       cl_trad=0.5             ! target radius
 c
       cl_beam_energy=10.6   ! def eg1-2000 (e16-5.754,e1f-5.498)
@@ -543,7 +558,7 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
         print *,'  --w W2min W2max      4.0  50     W^2 min max GeV^2'
         print *,'  --nxy nxx nyy   200 200  number of bins'
         print *,'  --zpos z-position      0    target z position in cm '
-        print *,'  --zwidth z-width 0    width in z cm (zpos+/-zwidth) '
+        print *,'  --zwidth z-width 0   width in z cm (zpos+/-zwidth/2)'
         print *,'  --set  iset  400    400-CJ15 LO PDFs'
         print *,'  --ski  0   number of rndm to skip'
         print *,'  --nmax   200   number of events in a file'

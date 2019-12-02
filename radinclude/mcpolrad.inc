@@ -2,7 +2,6 @@
 	parameter	(polrad_xmin=0.01)
 	parameter	(polrad_xmax=0.99)
 	parameter	(polrad_ymin=0.02)
-c-old-	parameter	(polrad_ymax=0.9)
 	parameter	(polrad_ymax=0.99)
 
       double precision sigrad,tine,tnuc,tpro,tbor,demin,phipoi

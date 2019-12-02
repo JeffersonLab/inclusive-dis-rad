@@ -1,37 +1,17 @@
-c
-      BLOCK DATA RADATA
-      implicit real*8(a-h,o-z)
-      common/cmp/amp,amp2,ap,ap2,aml,aml2,al2,amc2,amh,
-     .amt,tara,tarz,fermom,amm,amn,chbar,barn,isf20
-      common/p/pi,pi2,alfa,i1(8),i2(8)
-      data
-     .amm/2.7928456d0/,amn/-1.913148d0/,chbar/.197328d0/,barn/.389379d6/
-     .aml/.511000d-3/,aml2/.261112d-6/,al2/.522240d-6/,
-     .isf20/4/
-     .pi/3.1415926d0/,pi2/9.869604d0/,alfa/.729735d-2/,amc2/1.151857d0/,
-     .amp/.938272d0/,amh/.938272d0/,
-     .i2/1,1,1,2,3,3,1,2/,i1/3,3,4,4,3,3,3,3/
-      end
-
 *72*********************************************************************
       subroutine radgen_init(CTARGET,ebeam,LST40,ixytst)
-      implicit real*8(a-h,o-z)
-
+      implicit none 
+c
 #include "radinclude/tailcom.inc"
 #include "radinclude/mcpolrad.inc"
-
+#include "radinclude/cmpcom.inc"
+#include "radinclude/radgenkeys.inc"
+      integer ige,ixytst
       real ebeam
       INTEGER LST40
       CHARACTER*2 CTARGET
       CHARACTER*13 tname
-      common/cmp/amp,amp2,ap,ap2,aml,aml2,al2,amc2,amh,
-     .amt,tara,tarz,fermom,amm,amn,chbar,barn,isf20
-      REAL plrun,pnrun
-      common/radgenkeys/plrun,pnrun,ixytest,kill_elas_res
-       integer ixytest,ixytst
-       ixytest=ixytst
-
-
+c
 *	open(734,file='kill_elas_res.dat',status='old')
 *	read(734,*)kill_elas_res
 *	close(734)
@@ -45,6 +25,7 @@ c
 *     =1 : 2dim spline (is not supported in this version)
 *     =0 : make lookuptable
 *     = -1:	do not lookup table , calculate all events
+       ixytest=ixytst
 *----------------------------
 *    =2 : polrad 2.0
       ige= 2
@@ -129,9 +110,9 @@ C-----------------------------------
       IMPLICIT NONE
 ***********************************************************
 *  INPUT :
-*	 VPGEN(4) : virtuall photon 4 vector generated
+*	 VPGEN(4) : virtual photon 4 vector generated
 *  OUTPUT :
-*	 VPRAD(4) : virtuall photon 4 vector   _TRUE_
+*	 VPRAD(4) : virtual photon 4 vector   _TRUE_
 *	 PhRAD(4) : real rad. photon 4 vector
 *	 q2tr	  : true Q2
 *	 Utr	  : true U
@@ -139,11 +120,9 @@ C-----------------------------------
 #include "radinclude/mcpolrad.inc"
 #include "radinclude/phiout.inc"
 #include "radinclude/tailcom.inc"
+#include "radinclude/radgenkeys.inc"
       REAL VPGEN(4),VPRAD(4),PhRAD(4),q2tr,anutr
       REAL x,y,e1,q2,xs,ys,phil,weight
-      REAL plrun,pnrun
-      common/radgenkeys/plrun,pnrun,ixytest,kill_elas_res
-      integer ixytest,kill_elas_res
       INTEGER itagen
 *
 
@@ -316,7 +295,8 @@ c	  sicurr=scgen
        endif
 
 	 if(ita.ne.0)then
-        r1=r1*dsitkm(ndxtkm(ita),ita)
+        call grndm(rnd,1)
+        r1=rnd(1)*dsitkm(ndxtkm(ita),ita)
 	 do ktk=1,ndxtkm(ita)
 c	     print *,dsitkm(ktk,ita),r1,ndxtkm(ita)
 	    if (r1.le.dsitkm(ktk,ita)) then
@@ -393,7 +373,7 @@ c	 pause
 	    if (dphpoi.le.dsumph(kph)) then
 	       dphk1=(dphpoi-dsumph(kph-1))/
      +			   (dsumph(kph)-dsumph(kph-1))
-	       dphk=dphi(kph)+(dphk1-1.0d0)*ddephi(kph)
+	       dphk=dphi(kph)+(dphk1-1.0d0)*ddephi(kph-1)
 	       goto 40
 	    endif
 	 enddo
@@ -515,11 +495,9 @@ c	      write(*,'(i5,5f8.3)')ita,xs,ys,q2tr,anutr,sigcor
       common/p/pi,pi2,alfa,i1(8),i2(8)
       common/tail/un,pl,pn,qn,ita,isf1,isf2,isf3,ire
 #include "radinclude/mcpolrad.inc"
+#include "radinclude/radgenkeys.inc"
       common/delta5/delta5
       common/tmp/itmp
-      REAL plrun,pnrun
-      common/radgenkeys/plrun,pnrun,ixytest,kill_elas_res
-
       dimension tai(5),si(2,3),si0(2,3),tls(2,3,4)
 
       itmp=1
@@ -2279,9 +2257,9 @@ c$debug
        do nny=nt,1,-1
 	  if(ys.ge.y(nny))goto 10
        enddo
- 5     print *,' ys=',ys,' out of the region',nny,nt,xs,pl,pn,ixytest,itagen
+ 5     print *,' ys=',ys,' out of region',nny,nt,xs,pl,pn,ixytest,itagen
+       print *,' ys=',ys,' out of region',xs,ys,'*',y
         stop
-
 10     if(nny.eq.nt)goto 5
 
        if(ixytest.eq.1)then
@@ -2369,17 +2347,16 @@ c	       scgen=rr1
 		   wrk(ix,iy)=width(ix,iy,ii,itagen)
 	       enddo
 	       enddo
-	       ddetkm(ii,itagen)=fint(2,xym,na,a,wrk)
+               do iittkk=1,ntk
+	        ddetkm((ii-1)*ntk+iittkk,itagen)=fint(2,xym,na,a,wrk)
+	       enddo
 	    enddo
 
-	do iittkk=1,7*ntk
-	   ssuumm=0.
-	   do itoo=1,iittkk/ntk
-	    ssuumm=ssuumm+ddetkm(itoo,itagen)*ntk
-	   enddo
-	   dcvtkm(iittkk,itagen)=ssuumm+ddetkm((iittkk-1)/ntk+1,itagen)
-     .	 *(mod(iittkk,ntk)-0.5)
-	enddo
+	    dcvtkm(1,itagen)=ddetkm(1,itagen)/2d0
+       	 do iittkk=2,7*ntk
+	    dcvtkm(iittkk,itagen)=dcvtkm(iittkk-1,itagen)+
+     6     (ddetkm(iittkk-1,itagen)+ddetkm(iittkk,itagen))/2d0
+         enddo
 
 
       end
@@ -2398,6 +2375,10 @@ c	       scgen=rr1
        common/density/denstk(nt,nt,245,3),width(nt,nt,7,3)
        character*13 tname
 
+c	data lun/66/ymax/0.951/ymin/0.2/
+c     .	    xmax/0.661/xmin/0.12/
+c	data lun/66/ymax/0.951/ymin/0.2/
+c     .	    xmax/0.661/xmin/0.12/
 	data lun/66/ymax/0.99/ymin/0.05/
      .	    xmax/0.99/xmin/0.01/
 
@@ -2471,6 +2452,7 @@ c     .	       y(iy),x(ix,iy),sig1g,tnuc,tpro,sigrad
      .				 ,itkm=1,7*ntk)
 	  enddo
 	  enddo
+         print *,'RADGEN close lun->',lun
 	 close(lun)
 
 	elseif(ixytest.gt.0)then
@@ -2502,6 +2484,7 @@ c     .	       y(iy),x(ix,iy),sig1g,tnuc,tpro,sigrad
       else
 	stop 'xytabl -- ixytest < 0'
       endif
+        print *,'RADGEN close lunend-->',lun
 	close(lun)
       end
 
