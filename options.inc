@@ -22,5 +22,5 @@ c
 c
       integer cl_rad
       common/disrad/cl_rad
-      integer cl_target
-      common/distarg/cl_target
+      integer cl_target,cl_radsfs
+      common/distarg/cl_target,cl_radsfs

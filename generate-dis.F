@@ -28,6 +28,7 @@ c
       if(cl_rad.gt.0) then    ! using table
        if(cl_target.eq.1) CTARGET='P'                ! can be also D,HI
        if(cl_target.eq.2) CTARGET='D'                ! can be also HI
+       if(cl_target.eq.3) CTARGET='HI'                !helium
        LST40=0               ! unpolarized for now
 c
         if(cl_rad.eq.2) then 
@@ -253,6 +254,7 @@ c
           cl_pol=1.0    ! default values for weight
           cl_epol=0.0   ! default value for pol/sf
           if(cl_target.eq.2) NumNuc=2
+          if(cl_target.eq.3) NumNuc=3
           if(cl_rad.gt.0) process_id=cl_rad  
 c        
           if(itotal.ge.cl_nmax) then   ! each file correspond to number ~ xsection
@@ -265,7 +267,7 @@ c
 c also randomize
 c
           call itime(now)     ! now(1)=hour, (2)=minute, (3)=second
-           irannom=100*now(3)+10*now(2)+now(1)
+           irannom=3*now(3)+2*now(2)+now(1)
           print *,'Rndm numb. for set->',irannom,now(1),now(2),now(3)
            DO 100 iran=1,irannom
  100       RND=rand()
@@ -409,6 +411,7 @@ c
       cl_iset=0
       cl_rad=0            ! no radiative effects,1-std radgen
       cl_target=1           ! target-proton, 2-deuteron, 3-He
+      cl_radsfs=1           ! RC model 1-radgen,2-Bosted
       numopts  = IARGC()
 c      
       if(numopts.gt.0 ) then
@@ -460,6 +463,10 @@ c
            i=i+1
            CALL GETARG(i,cnumber)
            cl_target=valnum(cnumber)
+        elseif(cnumber.eq.'--radsfs'.and.i.lt.numopts) then
+           i=i+1
+           CALL GETARG(i,cnumber)
+           cl_radsfs=valnum(cnumber)
         elseif(cnumber.eq.'--x'.and.i.lt.numopts) then
            i=i+1
            CALL GETARG(i,cnumber)
@@ -568,8 +575,9 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
         print *,'  --realxsec .FALSE. use real xsection'
         print *,'  --xq2  .FALSE. use x/y generation by def.'
         print *,'  --writegrid  .FALSE.  dump the grid'
-        print *,'  --rad  0   no radiation,1-grid,2-calc'
+        print *,'  --rad  0   no radiation,1-read-grid,2-calc,3-create'
         print *,'  --targ  1  proton,2-deut,3-He'
+        print *,'  --radsfs  1  1-radgen,2-bosted'
         return
         end
 c
@@ -586,13 +594,14 @@ c
         print *,'xmin/xmax:         ',cl_xmin,cl_xmax  
         print *,'q2min/q2max:         ',cl_qmin,cl_qmax  
         print *,'ymin/ymax:         ',cl_ymin,cl_ymax  
-        print *,'radiation:         ',cl_rad 
+        print *,'rc-mode:         ',cl_rad 
         print *,'xgrid:  use xsecion grid',cl_gridxsec
         print *,'sfgrid  use F1/F2 grid',cl_gridsf
         print *,'realxsec .TRUE. use real xsection',cl_realxsec
         print *,'xq2 .TRUE. use x/Q^2 generation',cl_xq2
 c
         print *,'TARGET type:   ', cl_target 
+        print *,'RC-Model 1-radgen/2-bosted:   ', cl_radsfs 
         print *,'TARGET z-position:   ', cl_zpos 
         print *,'TARGET 1/2 width :   ', cl_zwidth
         print *,'TARGET radius :      ', cl_trad

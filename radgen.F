@@ -1427,8 +1427,50 @@ CDECK  ID>, F2SFUN.
 
 CDECK  ID>, R1990.
 ********************** r1990 ************************************
-
-      double precision function r1990f(aks,tc)
+      double precision function r1990f(dx,dq2)
+      implicit none
+#include "options.inc"
+      double precision dq2,dx,r1990fbosted,r1990fradgen
+c
+      if(cl_radsfs.eq.1) then ! standard radgen
+       r1990f=r1990fradgen(dx,dq2)
+      else if(cl_radsfs.eq.2) then ! Bosted SFs
+       r1990f=r1990fbosted(dx,dq2)
+      else
+       print *,'ERR: Unknown input for RADGEN' 
+       stop
+      endif
+      return
+      end
+c
+      double precision function r1990fbosted(dx,dq2)
+      implicit none
+#include "options.inc"
+            double precision dq2,dx
+            double precision Z,A,qsq,wsq,F1,F2,rc,g2
+********************** r1990 ************************************
+            if(cl_target.eq.1) then ! hydrogen
+             Z=1.0
+             A=1.0
+           else if(cl_target.eq.2) then ! deuteron 
+             Z=1.0
+             A=2.0
+           else if(cl_target.eq.3) then ! helium 
+             Z=2.0
+             A=3.0
+           else 
+             print *,'FIX Targets!!!'
+             stop
+           endif
+            qsq=dq2
+            Wsq=dq2*(1.D0-dx)/dx+0.88035
+      call F1F2IN09(Z, A, QSQ, Wsq, F1, F2, rc) 
+            g2=4*0.88035*dx*dx/dq2
+       r1990fbosted=(1.D0+g2)*F2/2.0/dx/F1-1.D0
+      return
+      end 
+c
+      double precision function r1990fradgen(aks,tc)
       implicit real*8(a-h,o-z)
       common/cmp/amp,amp2,ap,ap2,aml,aml2,al2,amc2,amh,
      .amt,tara,tarz,fermom,amm,amn,chbar,barn,isf20
@@ -1440,7 +1482,7 @@ CDECK  ID>, R1990.
       rb=.0635*zn+.5747/t-.3534/(t**2+.09)
       rc=.0599*zn+.5088/sqrt((t-5.*(1.-aks)**5)**2+2.1081**2)
       rrr=(ra+rb+rc)/3.
-      r1990f=rrr
+      r1990fradgen=rrr
 c	call r1990(tc,aks,r1990f)
       return
       end
@@ -1494,17 +1536,47 @@ CDECK  ID>, G2SFUN.
 
 
 
-
-
-
       double precision function df2d8(dq2,dx)
+      implicit none
+#include "options.inc"
+      double precision dq2,dx,df2d8bosted,df2d8radgen
+c
+      if(cl_radsfs.eq.1) then ! standard radgen
+       df2d8=df2d8radgen(dq2,dx)
+      else if(cl_radsfs.eq.2) then ! Bosted SFs
+       df2d8=df2d8bosted(dq2,dx)
+      else
+       print *,'ERR: Unknown input for RADGEN' 
+       stop
+      endif
+      return
+      end
+
+      double precision function df2d8bosted(dq2,dx)
+      implicit none
+*:=====================================================================:
+*
+            double precision dq2,dx
+            double precision Z,A,qsq,wsq,F1,F2,rc
+            Z=1.0
+            A=2.0
+            qsq=dq2
+            Wsq=dq2*(1.D0-dx)/dx+0.88035
+      call F1F2IN09(Z, A, QSQ, Wsq, F1, F2, rc) 
+        print *,'new-df2',Wsq,qsq,dx, F1, F2, rc
+        df2d8bosted=F2
+        return
+        end
+
+
+      double precision function df2d8radgen(dq2,dx)
 *:=====================================================================:
 *:								       :
 *:	author:    m.dueren	   last update: 06.03.1991	       :
 *:				   tested: yes			       :
 *:								       :
 *:	arguments: dq2,dx: double prec. input xbj,q2		       :
-*:		   df2h8* double prec f2  output		       :
+*:		   df2d8* double prec f2  output		       :
 *:								       :
 *:	called by: mkf2 					       :
 *:								       :
@@ -1551,7 +1623,7 @@ c     resonance-region
      :	   ,1.512,  .351 /
 c
 c
-      df2d8=1.d-30
+      df2d8radgen=1.d-30
       dw2 = .8803686078d0+dq2*(1.d0/dx-1.d0)
       dwmas = dsqrt(dw2)
       ddw = (dwmas-1.03d0)
@@ -1589,7 +1661,7 @@ c
       dssum = (1.d0-dgd2)
       ds = dssum * (1.d0-dexp(-4.177d0*ddw))
 c
-      df2d8 =
+      df2d8radgen =
      :	   ( .83333333333333*dgamma(de1+de2)/dgamma(de1)/dgamma(de2)
      :	   *dxw**detav1*dxw1**detav2
      :	   + .33333333333333*detas1*dxw1**detas2  ) * ds
@@ -1635,14 +1707,58 @@ c
 c
 c *** total f2 of d2
 c
-      df2d8 = df2d8 + dres
+      df2d8radgen = df2d8radgen + dres
 c
-      if (df2d8.gt.0d0) return
-      df2d8 = 1.d-30
+      if (df2d8radgen.gt.0d0) return
+      df2d8radgen = 1.d-30
       return
       end
 
       double precision function df2h8(dq2,dx)
+      implicit none
+#include "options.inc"
+      double precision dq2,dx,df2h8radgen,df2h8bosted
+c
+      if(cl_radsfs.eq.1) then ! standard radgen
+       df2h8=df2h8radgen(dq2,dx)
+      else if(cl_radsfs.eq.2) then ! Bosted SFs
+       df2h8=df2h8bosted(dq2,dx)
+      else
+       print *,'ERR: Unknown input for RADGEN' 
+       stop
+      endif
+      return
+      end
+c
+      double precision function df2h8bosted(dq2,dx)
+      implicit none
+#include "options.inc"
+*:=====================================================================:
+            double precision dq2,dx
+            double precision Z,A,qsq,wsq,F1,F2,rc,g2
+            if(cl_target.eq.1) then ! hydrogen
+             Z=1.0
+             A=1.0
+           else if(cl_target.eq.2) then ! deuteron 
+             Z=1.0
+             A=2.0
+           else if(cl_target.eq.3) then ! helium 
+             Z=2.0
+             A=3.0
+           else 
+             print *,'FIX Targets!!!'
+             stop
+           endif
+            qsq=dq2
+            Wsq=dq2*(1.D0-dx)/dx+0.88035
+      call F1F2IN09(Z, A, QSQ, Wsq, F1, F2, rc) 
+c        print *,'new-hf2',Wsq,qsq,dx, F1, F2, rc
+            df2h8bosted=F2
+c      print *,'xxq2xF2',dx,dq2,F2
+            return
+            end
+c
+      double precision function df2h8radgen(dq2,dx)
 *:=====================================================================:
 *:								       :
 *:	author:    m.dueren	   last update: 06.03.1991	       :
@@ -1695,7 +1811,7 @@ c     resonance-region:
      :	   ,1.421,1.2582
      :	   ,1.642, .376/
 c
-      df2h8 =1.d-30
+      df2h8radgen =1.d-30
       dw2 = .8803686078d0+dq2*(1.d0/dx-1.d0)
       dwmas = dsqrt(dw2)
       ddw = (dwmas-1.08d0)
@@ -1740,7 +1856,7 @@ c
       endif
       ds = dssum * dsthr
 c
-      df2h8 =
+      df2h8radgen =
      :	   ( .83333333333333*dgamma(de1+de2)/dgamma(de1)/dgamma(de2)
      :	   *dxw**detav1*dxw1**detav2
      :	   + .33333333333333*detas1*dxw1**detas2  ) * ds
@@ -1855,11 +1971,11 @@ c
 c
 c *** (total) = (qcd part) + (resonance region)
 c
-      df2h8 = df2h8 + dres
+      df2h8radgen = df2h8radgen + dres
 c
-      if(df2h8 .gt. 0.d0) return
+      if(df2h8radgen .gt. 0.d0) return
 c
-      df2h8=1.d-30
+      df2h8radgen=1.d-30
       return
       end
 
