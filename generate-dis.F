@@ -313,7 +313,7 @@ c
 
            vx=(0.5-rand(0))*pwidth
            vy=(0.5-rand(0))*pwidth
-           vz=(0.5-rand(0))*zwidth
+           vz=cl_zpos+(0.5-rand(0))*zwidth
 c
         if(cl_rad.gt.0) then
          e1=cl_beam_energy
@@ -564,8 +564,8 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
         print *,'  --q Q2min Q2max      0.85 16.05 Q2 min max in GeV^2'
         print *,'  --w W2min W2max      4.0  50     W^2 min max GeV^2'
         print *,'  --nxy nxx nyy   200 200  number of bins'
-        print *,'  --zpos z-position      0    target z position in cm '
-        print *,'  --zwidth z-width 0   width in z cm (zpos+/-zwidth/2)'
+        print *,'  --zpos z-position     -3    target z position in cm '
+        print *,'  --zwidth z-width 5.0 width in z cm (zpos+/-zwidth/2)'
         print *,'  --set  iset  400    400-CJ15 LO PDFs'
         print *,'  --ski  0   number of rndm to skip'
         print *,'  --nmax   200   number of events in a file'
