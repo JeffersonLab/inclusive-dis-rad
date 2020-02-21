@@ -3,15 +3,15 @@ FOR   =  -lstdc++ -lnsl -lcrypt -ldl -lgfortran
 CERNLIBS =  -L/apps/cernlib/x86_64_rhel6_4.7.2/2005/lib -lmathlib  -lpacklib 
  
 semifall : $(OBJ)
-	 gfortran  -o	generate-dis  $(OBJ) $(FOR)
+	 gfortran  -o	inclusive-dis-rad  $(OBJ) $(FOR)
 $(OBJ) : %.o: %.F
 #	gfortran  -Dtestcj=def   -c $< -o $@  
 	gfortran    -c $< -o $@
 
 clean:
-	rm -f generate-dis   $(OBJ)
+	rm -f inclusive-dis-rad   $(OBJ)
 
-#	 gfortran  -o	generate-dis  $(OBJ) $(CERNLIBS) $(FOR)
+#	 gfortran  -o	inclusive-dis-rad  $(OBJ) $(CERNLIBS) $(FOR)
 
 
 
