@@ -1,5 +1,5 @@
 OBJ=  generate-dis.o calc_f1.o CJpdf.o F1F209.o grid_oper.o radgen.o mycernlib.o
-FOR   =  -lstdc++ -lnsl -lcrypt -ldl -lgfortran
+FOR   =  -lstdc++  -lgfortran
 CERNLIBS =  -L/apps/cernlib/x86_64_rhel6_4.7.2/2005/lib -lmathlib  -lpacklib 
  
 semifall : $(OBJ)
