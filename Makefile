@@ -6,7 +6,7 @@ semifall : $(OBJ)
 	 gfortran  -o	inclusive-dis-rad  $(OBJ) $(FOR)
 $(OBJ) : %.o: %.F
 #	gfortran  -Dtestcj=def   -c $< -o $@  
-	gfortran    -c $< -o $@
+	gfortran  -std=legacy   -c $< -o $@
 
 clean:
 	rm -f inclusive-dis-rad   $(OBJ)
