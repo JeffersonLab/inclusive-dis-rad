@@ -20,6 +20,7 @@ To get more command line options
 
 
 Default option uses Bosted's parameterization coded in F1F209.f
+
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c F1F209.f
 c Package of FORTRAN subroutine describing fits to inclusive inelastic
