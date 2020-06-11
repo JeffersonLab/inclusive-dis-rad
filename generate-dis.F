@@ -23,6 +23,7 @@ c
        integer ifail,iaccept
       data ifail/0/,iaccept/0/
 c
+      call RNDMSEED()
       call cloptions()
        E_beam=cl_beam_energy
       if(cl_rad.gt.0) then    ! using table
@@ -41,6 +42,7 @@ c
      6,   'x ',cl_xmin,cl_xmax,' y ',cl_ymin,cl_ymax
           stop
          endif
+	 print *,'RADGEN WILL CREATE THE TABLE!',cl_rad
          call radgen_init(ctarget,E_beam,lst40,ixytst)
          print *,'RADGEN table created for Eb=',E_beam
          ixytst=2               ! create the table table
@@ -141,7 +143,7 @@ c               print *,'-iq,x,y,accept',iq,x,y,ifail,iaccept
                iaccept=iaccept+1
 c               print *,'+iq,x,y,accept',iq,x,y,ifail,iaccept
           endif
-       call writeevent(x,q2,px_el,py_el,pz_el,e_prime,x_sec
+       call writeevent(x,q2,w2,px_el,py_el,pz_el,e_prime,x_sec
      6,sf,pwidth,zwidth)
         iq=iq+1
         endif !xsec
@@ -229,11 +231,12 @@ c
 c
 c  write to LUND file
 c
-      subroutine writeevent(x,q2,px,py,pz,eprime,xsec,sf,pwidth,zwidth)
+      subroutine writeevent(x,q2,w2,px,py,pz,eprime,xsec
+     6,sf,pwidth,zwidth)
       implicit none
 #include "options.inc"
 #include "const.inc"
-      real x,q2,y
+      real x,q2,y,w2
       real px,py,pz,eprime,pprime,xsec,sf,pwidth,zwidth,vx,vy,vz
       integer   NumNuc,NumProt,Ntracks,beam_pid,targ_id,process_id
       integer irannom
@@ -261,17 +264,7 @@ c
            close (41)
            lFirst=.TRUE.
            ifilenum=ifilenum+1
-           CALL SRAND(ifilenum)
            itotal=0
-c
-c also randomize
-c
-          call itime(now)     ! now(1)=hour, (2)=minute, (3)=second
-           irannom=3*now(3)+2*now(2)+now(1)
-          print *,'Rndm numb. for set->',irannom,now(1),now(2),now(3)
-           DO 100 iran=1,irannom
- 100       RND=rand()
-c
           endif
 c
                 itotal=itotal+1
@@ -338,6 +331,9 @@ c
              if(0.lt.weight.and.100.gt.weight) then
               cl_pol=weight  ! temporary solution
              else
+	      print *,'PROBLEM WITH WEIGHT?',itotal,weight,
+     6        x,q2,w2,y,e1,eprime,' ** ',vpgen,'** ',PhRAD,'**',q2tr,utr
+              itotal=itotal-1
               return
              endif
 c
@@ -693,3 +689,20 @@ c
        return
        end
 c
+c
+       subroutine RNDMSEED()
+       implicit none
+       integer*4 now(3),ifilenum
+       integer iran,irannom
+       real rand,rnd
+c
+c
+          call itime(now)     ! now(1)=hour, (2)=minute, (3)=second
+           CALL SRAND(now(3))
+           irannom=10*now(3)
+          print *,'Rndm numb->',irannom,now(1),now(2),now(3),rand()
+           DO 100 iran=1,irannom
+ 100       RND=rand()
+c
+	   return
+	   end
