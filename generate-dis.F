@@ -270,7 +270,7 @@ c
                 itotal=itotal+1
           if (lFirst) then   ! open the file
            if(cl_docker) then
-             write(fname,'(A)') 'dis-rad.dat'
+             write(fname,'(A)') 'inclusive-dis-rad.dat'
              cl_nmax=cl_triggers+100
            else
            print *,'filename ',datfilename
