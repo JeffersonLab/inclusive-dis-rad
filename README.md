@@ -18,6 +18,9 @@ Example 3 `./inclusive-dis-rad --trig 10000 --rad 3` will produce also a radiati
 To get more command line options
 `./inclusive-dis-rad --help`
 
+To get a new random seed use in command line options
+`./inclusive-dis-rad --seed NNNN`
+
 
 Default option uses Bosted's parameterization coded in F1F209.f
 
