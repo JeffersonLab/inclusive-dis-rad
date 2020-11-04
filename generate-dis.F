@@ -402,6 +402,7 @@ c
       cl_wmax=400.0
 c
       cl_triggers=10      ! all events
+      cl_seed=0
       cl_nmax = 2000       ! max number of events in the file
       cl_skip = 0         ! number to skip
       cl_iset=0
@@ -421,6 +422,10 @@ c
           i=i+1
           CALL GETARG(i,cnumber)
           cl_triggers=valnum(cnumber)
+        elseif(cnumber.eq.'--seed'.and.i.lt.numopts) then
+          i=i+1
+          CALL GETARG(i,cnumber)
+          cl_seed=valnum(cnumber)
         elseif(cnumber.eq.'--maxev'.and.i.lt.numopts) then
           i=i+1
           CALL GETARG(i,cnumber)
@@ -543,6 +548,10 @@ c      cl_ymin=1.0/2.0/cl_beam_energy  ! for 1 GeV^2 Q^2min
         if(cl_ymin.lt.0.055) cl_ymin=0.055  ! radgen couldn't hadle that
         if(cl_ymax.gt.0.99) cl_ymax=0.99  ! radgen couldn't hadle that
         call printvalues
+c
+c randomize
+c
+        call RNDMSEED()
         return 
         end
 c
@@ -692,17 +701,22 @@ c
 c
        subroutine RNDMSEED()
        implicit none
+#include "options.inc"
        integer*4 now(3),ifilenum
        integer iran,irannom
        real rand,rnd
 c
 c
+          if(cl_seed.eq.0) then
           call itime(now)     ! now(1)=hour, (2)=minute, (3)=second
-           CALL SRAND(now(3))
-           irannom=10*now(3)
+	  irannom=now(3)+now(1)*3600+now(2)*60
+	  else 
+	  irannom=cl_seed
+	  endif
+           CALL SRAND(irannom)
           print *,'Rndm numb->',irannom,now(1),now(2),now(3),rand()
-           DO 100 iran=1,irannom
- 100       RND=rand()
+c           DO 100 iran=1,irannom
+c 100       RND=rand()
 c
 	   return
 	   end

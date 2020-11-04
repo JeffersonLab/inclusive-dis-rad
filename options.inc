@@ -16,9 +16,9 @@ c
      6cl_wmin,cl_wmax,cl_ymin,cl_ymax,cl_tmin,cl_tmax,cl_emin,cl_emax
       common /disint/ cl_triggers,cl_skip,cl_nmax,cl_iset 
 c
-      integer cl_maxev,total_events
+      integer cl_maxev,total_events,cl_seed
       character*180 datfilename
-      common /elasfile/ cl_maxev,total_events,datfilename
+      common /elasfile/ cl_maxev,total_events,datfilename,cl_seed
 c
       integer cl_rad
       common/disrad/cl_rad
