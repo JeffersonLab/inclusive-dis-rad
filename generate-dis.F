@@ -371,7 +371,7 @@ c$$$     6 ,Px,Py,Pz,e,0.0005,vx,vy,vz
 #include "options.inc"
        integer i
        character*20 cnumber
-       INTEGER  numopts
+       INTEGER  numopts,ivalnum
        real valnum
 c
 c   grid selection
@@ -425,7 +425,7 @@ c
         elseif(cnumber.eq.'--seed'.and.i.lt.numopts) then
           i=i+1
           CALL GETARG(i,cnumber)
-          cl_seed=valnum(cnumber)
+          cl_seed=ivalnum(cnumber)
         elseif(cnumber.eq.'--maxev'.and.i.lt.numopts) then
           i=i+1
           CALL GETARG(i,cnumber)
@@ -684,8 +684,57 @@ c     translate the decimal portion
 
       return
       end     
+c 
+      integer function ivalnum(str)
+c     return the real value contained into a string
+
+      implicit integer (k-l)
+      character *(*) str
+      logical segno
+      double precison valnum
+      
+
+      segno=.false.
+      valnum=0.00
+      lu=length(str)
+      
+c     check the number sign
+      if(str(1:1).eq.'-')then
+      segno=.true.
+      str=str(2:lu)
+      lu=lu-1
+      end if
+
+c     check if number is float or integer
+      if(index(str,'.').ne.0)then
+      iin=index(str,'.')-1
+      else
+      iin=lu
+      end if
+
+      ifr=lu-(iin+1)
+
+c     translate the integer portion
+      doi=1,iin  
+      k=ichar(str(i:i))-48
+      valnum=valnum+float(k)*10.00**float(iin-i)
+      end do         
+
+      if(iin.eq.lu)goto 10
+      str=str(iin+2:lu)
+
+c     translate the decimal portion
+      doi=1,ifr  
+      k=ichar(str(i:i))-48
+      valnum=valnum+float(k)/10.00**float(i)
+      end do
+
+10    if(segno)valnum=-valnum
+       ivalnum=int(valnum)
+      return
+      end     
 c
-       real function vdotm(a,b,n)
+      real function vdotm(a,b,n)
        implicit none
        real a(4),b(4),s
        integer i,n
