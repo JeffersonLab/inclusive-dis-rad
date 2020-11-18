@@ -691,7 +691,7 @@ c     return the real value contained into a string
       implicit integer (k-l)
       character *(*) str
       logical segno
-      double precison valnum
+      double precision valnum
       
 
       segno=.false.
@@ -763,7 +763,7 @@ c
 	  irannom=cl_seed
 	  endif
            CALL SRAND(irannom)
-          print *,'Rndm numb->',irannom,now(1),now(2),now(3),rand()
+          print *,'RandomSeedActuallyUsed:',irannom,now
 c           DO 100 iran=1,irannom
 c 100       RND=rand()
 c
