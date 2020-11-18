@@ -691,7 +691,7 @@ c     return the real value contained into a string
       implicit integer (k-l)
       character *(*) str
       logical segno
-      double precison valnum
+      double precision valnum
       
 
       segno=.false.
