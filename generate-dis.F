@@ -23,7 +23,6 @@ c
        integer ifail,iaccept
       data ifail/0/,iaccept/0/
 c
-      call RNDMSEED()
       call cloptions()
        E_beam=cl_beam_energy
       if(cl_rad.gt.0) then    ! using table
@@ -764,8 +763,6 @@ c
 	  endif
            CALL SRAND(irannom)
           print *,'RandomSeedActuallyUsed:',irannom,now
-c           DO 100 iran=1,irannom
-c 100       RND=rand()
 c
 	   return
 	   end
