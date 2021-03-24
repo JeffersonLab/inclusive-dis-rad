@@ -576,7 +576,7 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
         print *,'  --xq2  .FALSE.   generate in x/y'
         print *,'  --xgrid  .FALSE.   use xsec grid'
         print *,'  --sfgrid  .FALSE.   use  F1F2 grid'
-        print *,'  --realxsec .FALSE. use real xsection'
+        print *,'  --realxsec .TRUE. use real xsection'
         print *,'  --xq2  .FALSE. use x/y generation by def.'
         print *,'  --writegrid  .FALSE.  dump the grid'
         print *,'  --rad  0   no radiation,1-read-grid,2-calc,3-create'
