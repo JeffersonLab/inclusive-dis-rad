@@ -249,7 +249,7 @@ c
           integer jc,m,itotal
           DATA itotal /0/
           character*8  c8name
-          character*200  fname
+          character*500  fname
           integer*4 iran,now(3),ifilenum
           DATA ifilenum /1/
 c
