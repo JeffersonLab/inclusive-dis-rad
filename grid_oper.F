@@ -98,7 +98,7 @@ C-----------------------------------------------------
       integer iostat,i,j,k,l,i1,j1,ix1,itotal
       real sxbmax,symax,ebeam
       real gam2,xa,ya,q2,q2a,xcalc,xcalc2,x_sec
-      character*200  pdffile,clasdispdf
+      character*500  pdffile,clasdispdf
 c
       inquire(file='xdata/xdata.json',exist=ex)
 c
@@ -271,7 +271,7 @@ c
         enddo
         enddo
         close(25)
-        stop
+C         stop
         return
         end
 

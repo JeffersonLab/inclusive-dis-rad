@@ -111,8 +111,8 @@ c define the electron
         e_prime=E_beam-nu
         p_prime=sqrt(e_prime*e_prime-em*em)
         s2=q2/(4.*E_beam*e_prime)
-        thetar=asin(sqrt(s2))*2.0
         if(s2.gt.1.0.or.s2.lt.0) goto 100         ! 0<sin^2<1
+        thetar=asin(sqrt(s2))*2.0
         px_el=p_prime*sin(thetar)*cos(fiel)
         py_el=p_prime*sin(thetar)*sin(fiel)
         pz_el=p_prime*cos(thetar)
@@ -156,7 +156,7 @@ c
 c
  2       continue
                print *,'iq,ifail,iaccept',iq,ifail,iaccept
-       stop
+C        stop
        end
 c
        subroutine get_xsec(ztar,atar,x,y,q2,w2,eps,gam,x_sec,F1p,F2p
@@ -249,7 +249,7 @@ c
           integer jc,m,itotal
           DATA itotal /0/
           character*8  c8name
-          character*200  fname
+          character*500  fname
           integer*4 iran,now(3),ifilenum
           DATA ifilenum /1/
 c
@@ -378,7 +378,7 @@ c
       cl_gridxsec=.FALSE.  ! don't read x-section grid
       cl_gridsf=.FALSE.  ! don't read struck function grid
       cl_gridwrite=.FALSE.  ! don't write the grid
-      cl_realxsec=.FALSE.  ! do the weighted generation by default
+      cl_realxsec=.TRUE.  ! do the weighted generation by default
       cl_xq2=.FALSE.       ! do x/y by default
       cl_docker=.FALSE.    ! set if 1 file is needed 
 c
@@ -576,7 +576,7 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
         print *,'  --xq2  .FALSE.   generate in x/y'
         print *,'  --xgrid  .FALSE.   use xsec grid'
         print *,'  --sfgrid  .FALSE.   use  F1F2 grid'
-        print *,'  --realxsec .FALSE. use real xsection'
+        print *,'  --realxsec .TRUE. use real xsection'
         print *,'  --xq2  .FALSE. use x/y generation by def.'
         print *,'  --writegrid  .FALSE.  dump the grid'
         print *,'  --rad  0   no radiation,1-read-grid,2-calc,3-create'
