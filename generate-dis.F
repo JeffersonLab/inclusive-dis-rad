@@ -378,7 +378,7 @@ c
       cl_gridxsec=.FALSE.  ! don't read x-section grid
       cl_gridsf=.FALSE.  ! don't read struck function grid
       cl_gridwrite=.FALSE.  ! don't write the grid
-      cl_realxsec=.FALSE.  ! do the weighted generation by default
+      cl_realxsec=.TRUE.  ! do the weighted generation by default
       cl_xq2=.FALSE.       ! do x/y by default
       cl_docker=.FALSE.    ! set if 1 file is needed 
 c
