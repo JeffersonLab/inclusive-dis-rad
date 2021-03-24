@@ -111,8 +111,8 @@ c define the electron
         e_prime=E_beam-nu
         p_prime=sqrt(e_prime*e_prime-em*em)
         s2=q2/(4.*E_beam*e_prime)
-        thetar=asin(sqrt(s2))*2.0
         if(s2.gt.1.0.or.s2.lt.0) goto 100         ! 0<sin^2<1
+        thetar=asin(sqrt(s2))*2.0
         px_el=p_prime*sin(thetar)*cos(fiel)
         py_el=p_prime*sin(thetar)*sin(fiel)
         pz_el=p_prime*cos(thetar)
