@@ -156,7 +156,7 @@ c
 c
  2       continue
                print *,'iq,ifail,iaccept',iq,ifail,iaccept
-       stop
+C        stop
        end
 c
        subroutine get_xsec(ztar,atar,x,y,q2,w2,eps,gam,x_sec,F1p,F2p

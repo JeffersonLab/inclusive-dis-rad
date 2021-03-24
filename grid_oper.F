@@ -271,7 +271,7 @@ c
         enddo
         enddo
         close(25)
-        stop
+C         stop
         return
         end
 
